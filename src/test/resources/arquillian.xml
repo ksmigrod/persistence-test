@@ -14,6 +14,7 @@
 
             <property name="simpleLog">true</property>
             <property name="cleanOnStartUp">true</property>
+            <property name="classifier">plume</property>
 
             <property name="dir">target/server</property>
             <property name="appWorkingDir">target/arquillian</property>
