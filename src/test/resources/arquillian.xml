@@ -33,4 +33,8 @@
     <extension qualifier="persistence">
         <property name="defaultDataSource">openejb:Resource/fooDS</property> <!--3-->
     </extension>
+
+    <extension qualifier="persistence-dbunit">
+        <property name="datatypeFactory">org.dbunit.ext.hsqldb.HsqldbDataTypeFactory</property>
+    </extension>
 </arquillian>
