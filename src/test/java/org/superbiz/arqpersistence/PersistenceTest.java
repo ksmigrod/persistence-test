@@ -5,6 +5,8 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
 import org.jboss.arquillian.persistence.ShouldMatchDataSet;
 import org.jboss.arquillian.persistence.UsingDataSet;
+import org.jboss.arquillian.transaction.api.annotation.TransactionMode;
+import org.jboss.arquillian.transaction.api.annotation.Transactional;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
@@ -22,12 +24,16 @@ public class PersistenceTest {
     @Deployment
     public static WebArchive deploy() throws Exception {       // <1>
         return ShrinkWrap.create(WebArchive.class, "PersistenceTest.war")
-                        .addClasses(MyEntity.class, HappyCaseEJB.class)
+                        .addClasses(MyEntity.class, HappyCaseEJB.class,
+                                RollbackEJB.class)
                         .addAsWebInfResource("test-persistence.xml", "persistence.xml");
     }
 
     @Inject
     HappyCaseEJB happyCaseEJB;
+
+    @Inject
+    RollbackEJB rollbackEJB;
 
     @PersistenceContext(name = "myPU")                         // <2>
     private EntityManager em;
@@ -64,8 +70,17 @@ public class PersistenceTest {
     @UsingDataSet("datasets/before_update.xml")
     @ShouldMatchDataSet("datasets/after_update.xml")
     @InSequence(3)
-    public void shouldUpdateEntityViaEJB() throws Exception {        // <5>
+    public void shouldUpdateEntityViaEJB() throws Exception {
         happyCaseEJB.update();
+    }
+
+    @Test
+    @UsingDataSet("datasets/before_update.xml")
+    @ShouldMatchDataSet("datasets/before_update.xml")
+    @InSequence(4)
+    @Transactional(TransactionMode.DISABLED)
+    public void shouldNotUpdateViaRollbackEJB() throws Exception {
+        rollbackEJB.changeAndRollback();
     }
 }
 //end::doc[]
