@@ -10,7 +10,7 @@ import javax.transaction.TransactionSynchronizationRegistry;
 import javax.transaction.Transactional;
 
 @ApplicationScoped
-public class RollbackCaseCDI implements RollbackCase {
+public class RollbackWithNestedCDI implements RollbackWithNested {
 
     @PersistenceContext
     EntityManager entityManager;
@@ -18,11 +18,17 @@ public class RollbackCaseCDI implements RollbackCase {
     @Inject
     TransactionSynchronizationRegistry transactionSynchronizationRegistry;
 
+    @Inject
+    NestedTransaction nestedTransaction;
+
     @Override
     @Transactional
-    public void changeAndRollback() {
-        MyEntity myEntity = entityManager.find(MyEntity.class, "Key 1");
-        myEntity.setValue("Should be rolled back.");
+    public void rollbackAndNested() {
+        MyEntity entity1 = entityManager.find(MyEntity.class, "Key 1");
+        entity1.setValue("Rollback Value 1");
+        MyEntity entity2 = entityManager.find(MyEntity.class, "Key 2");
+        entity2.setValue("Rollback Value 2");
+        nestedTransaction.modifyInNewTransaction();
         transactionSynchronizationRegistry.setRollbackOnly();
     }
 }

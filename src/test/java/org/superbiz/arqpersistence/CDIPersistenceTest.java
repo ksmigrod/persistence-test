@@ -25,8 +25,9 @@ public class CDIPersistenceTest {
     @Deployment
     public static WebArchive deploy() {       // <1>
         return ShrinkWrap.create(WebArchive.class, "CDIPersistenceTest.war")
-                .addClasses(MyEntity.class, HappyCase.class, HappyCaseCDI.class, EntityManagerProducer.class,
-                        RollbackCase.class, RollbackCaseCDI.class, TransactionSynchronizationRegistryProducer.class)
+                .addClasses(MyEntity.class, HappyCase.class, HappyCaseCDI.class,
+                        RollbackCase.class, RollbackCaseCDI.class,
+                        TransactionSynchronizationRegistryProducer.class)
                 .addAsWebInfResource("test-persistence.xml", "persistence.xml");
     }
 
