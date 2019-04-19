@@ -12,20 +12,21 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.superbiz.arqpersistence.cdi.HappyCase;
-import org.superbiz.arqpersistence.cdi.HappyCaseCDI;
+import org.superbiz.arqpersistence.cdi.*;
 import org.superbiz.arqpersistence.model.MyEntity;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.TransactionSynchronizationRegistry;
 
 @RunWith(Arquillian.class)
 public class CDIPersistenceTest {
     @Deployment
     public static WebArchive deploy() {       // <1>
         return ShrinkWrap.create(WebArchive.class, "CDIPersistenceTest.war")
-                .addClasses(MyEntity.class, HappyCase.class, HappyCaseCDI.class)
+                .addClasses(MyEntity.class, HappyCase.class, HappyCaseCDI.class, EntityManagerProducer.class,
+                        RollbackCase.class, RollbackCaseCDI.class, TransactionSynchronizationRegistryProducer.class)
                 .addAsWebInfResource("test-persistence.xml", "persistence.xml");
     }
 
@@ -34,6 +35,9 @@ public class CDIPersistenceTest {
 
     @Inject
     HappyCase happyCase;
+
+    @Inject
+    RollbackCase rollbackCase;
 
     @Before
     public void cleanCache() {
@@ -52,8 +56,17 @@ public class CDIPersistenceTest {
     @ShouldMatchDataSet("datasets/after_update.xml")
     @InSequence(2)
     @Transactional(TransactionMode.DISABLED)
-    public void shouldUpdateEntityViaEJB() {
+    public void shouldUpdateEntityViaCDI() {
         happyCase.update();
+    }
+
+    @Test
+    @UsingDataSet("datasets/before_update.xml")
+    @ShouldMatchDataSet("datasets/before_update.xml")
+    @InSequence(3)
+    @Transactional(TransactionMode.DISABLED)
+    public void shouldNotUpdateViaRollbackCDI() {
+        rollbackCase.changeAndRollback();
     }
 
 }

@@ -2,15 +2,17 @@ package org.superbiz.arqpersistence.cdi;
 
 import org.superbiz.arqpersistence.model.MyEntity;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
-@RequestScoped
+@ApplicationScoped
 public class HappyCaseCDI implements HappyCase {
 
-    @PersistenceContext
+    @Inject
     EntityManager em;
 
     @Transactional
