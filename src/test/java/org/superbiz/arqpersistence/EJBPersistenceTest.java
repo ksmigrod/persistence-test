@@ -26,7 +26,7 @@ import javax.persistence.PersistenceContext;
 public class EJBPersistenceTest {
     @Deployment
     public static WebArchive deploy() throws Exception {       // <1>
-        return ShrinkWrap.create(WebArchive.class, "PersistenceTest.war")
+        return ShrinkWrap.create(WebArchive.class, "EJBPersistenceTest.war")
                 .addClasses(MyEntity.class, HappyCaseEJB.class,
                         RollbackEJB.class, RollbackWithNestedEJB.class, NestedTransactionEJB.class)
                 .addAsWebInfResource("test-persistence.xml", "persistence.xml");
