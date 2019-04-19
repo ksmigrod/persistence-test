@@ -8,6 +8,7 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.superbiz.arqpersistence.model.MyEntity;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;

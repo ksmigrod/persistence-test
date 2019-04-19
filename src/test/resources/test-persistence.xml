@@ -7,7 +7,7 @@
     <persistence-unit name="myPU" transaction-type="JTA">
         <jta-data-source>fooDS</jta-data-source>              <!--1-->
 
-        <class>org.superbiz.arqpersistence.MyEntity</class>
+        <class>org.superbiz.arqpersistence.model.MyEntity</class>
 
         <properties>
             <property name="javax.persistence.schema-generation.database.action" value="create"/>

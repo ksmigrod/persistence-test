@@ -1,4 +1,6 @@
-package org.superbiz.arqpersistence;
+package org.superbiz.arqpersistence.ejb;
+
+import org.superbiz.arqpersistence.model.MyEntity;
 
 import javax.annotation.Resource;
 import javax.ejb.EJBContext;
