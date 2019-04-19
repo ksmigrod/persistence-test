@@ -13,7 +13,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.superbiz.arqpersistence.ejb.HappyCaseEJB;
+import org.superbiz.arqpersistence.ejb.NestedTransactionEJB;
 import org.superbiz.arqpersistence.ejb.RollbackEJB;
+import org.superbiz.arqpersistence.ejb.RollbackWithNestedEJB;
 import org.superbiz.arqpersistence.model.MyEntity;
 
 import javax.inject.Inject;
@@ -26,7 +28,7 @@ public class EJBPersistenceTest {
     public static WebArchive deploy() throws Exception {       // <1>
         return ShrinkWrap.create(WebArchive.class, "PersistenceTest.war")
                 .addClasses(MyEntity.class, HappyCaseEJB.class,
-                        RollbackEJB.class)
+                        RollbackEJB.class, RollbackWithNestedEJB.class, NestedTransactionEJB.class)
                 .addAsWebInfResource("test-persistence.xml", "persistence.xml");
     }
 
@@ -39,6 +41,9 @@ public class EJBPersistenceTest {
     @Inject
     RollbackEJB rollbackEJB;
 
+    @Inject
+    RollbackWithNestedEJB rollbackWithNestedEJB;
+
     @Before
     public void cleanCache() {
         em.getEntityManagerFactory().getCache().evictAll();
@@ -46,6 +51,7 @@ public class EJBPersistenceTest {
 
     @Test
     @InSequence(1)
+    @Transactional(TransactionMode.COMMIT)
     public void initEntityManager() {                          // <3>
         em.getMetamodel();
     }
@@ -54,6 +60,7 @@ public class EJBPersistenceTest {
     @UsingDataSet("datasets/before_update.xml")
     @ShouldMatchDataSet("datasets/after_update.xml")
     @InSequence(2)
+    @Transactional(TransactionMode.DISABLED)
     public void shouldUpdateEntityViaEJB() throws Exception {
         happyCaseEJB.update();
     }
@@ -65,6 +72,15 @@ public class EJBPersistenceTest {
     @Transactional(TransactionMode.DISABLED)
     public void shouldNotUpdateViaRollbackEJB() throws Exception {
         rollbackEJB.changeAndRollback();
+    }
+
+    @Test
+    @UsingDataSet("datasets/before_update.xml")
+    @ShouldMatchDataSet("datasets/after_update.xml")
+    @InSequence(4)
+    @Transactional(TransactionMode.DISABLED)
+    public void shouldUpdateEntityViaNestedTransactionEJB() throws Exception {
+        rollbackWithNestedEJB.rollbackAndNested();
     }
 
 }
